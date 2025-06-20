@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="title">Sobre - Cadastro de Pessoas</ui:define>
+
+    <ui:define name="content">
+        <div class="card">
+            <h1 class="page-title">Sobre o Sistema</h1>
+            
+            <p:panel header="Informações do Sistema" styleClass="mb-3">
+                <p>
+                    Este sistema foi desenvolvido como parte de um teste técnico para demonstrar
+                    conhecimentos em desenvolvimento Java EE com arquitetura em camadas.
+                </p>
+                
+                <h3>Tecnologias Utilizadas</h3>
+                <ul>
+                    <li>Backend: Java EE com EJB 3.2</li>
+                    <li>Frontend: JSF 2.3 com PrimeFaces</li>
+                    <li>Persistência: JPA 2.2 com Hibernate</li>
+                    <li>Banco de Dados: PostgreSQL</li>
+                    <li>Build: Maven</li>
+                </ul>
+                
+                <h3>Arquitetura</h3>
+                <p>O sistema foi desenvolvido seguindo uma arquitetura em camadas:</p>
+                <ul>
+                    <li><strong>Domain:</strong> Entidades JPA, enums e objetos de valor</li>
+                    <li><strong>Application:</strong> Serviços EJB, DTOs e mappers</li>
+                    <li><strong>Infrastructure:</strong> Repositórios JPA</li>
+                    <li><strong>Presentation:</strong> Controllers JSF e páginas XHTML</li>
+                    <li><strong>Shared:</strong> Exceções customizadas e utilitários</li>
+                </ul>
+            </p:panel>
+            
+            <p:panel header="Funcionalidades" styleClass="mb-3">
+                <ul>
+                    <li>Cadastro, edição, listagem e exclusão de pessoas</li>
+                    <li>Cadastro, edição, listagem e exclusão de endereços</li>
+                    <li>Validação de dados em múltiplas camadas</li>
+                    <li>Interface responsiva com PrimeFaces</li>
+                </ul>
+            </p:panel>
+            
+            <p:panel header="Contato" styleClass="mb-3">
+                <p>
+                    Para mais informações, entre em contato pelo e-mail: <a href="mailto:contato@teste.com">contato@teste.com</a>
+                </p>
+            </p:panel>
+        </div>
+    </ui:define>
+</ui:composition>

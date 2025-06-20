@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faces-config xmlns="https://jakarta.ee/xml/ns/jakartaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-facesconfig_3_0.xsd"
+              version="3.0">
+              
+    <!-- Configuração de navegação -->
+    <navigation-rule>
+        <from-view-id>/index.xhtml</from-view-id>
+        <navigation-case>
+            <from-outcome>pessoa</from-outcome>
+            <to-view-id>/pages/pessoa/lista.xhtml</to-view-id>
+            <redirect />
+        </navigation-case>
+    </navigation-rule>
+    
+    <!-- Configuração de mensagens -->
+    <application>
+        <locale-config>
+            <default-locale>pt_BR</default-locale>
+            <supported-locale>pt_BR</supported-locale>
+            <supported-locale>en_US</supported-locale>
+        </locale-config>
+        
+        <resource-bundle>
+            <base-name>messages</base-name>
+            <var>msg</var>
+        </resource-bundle>
+    </application>
+    
+    <!-- Configuração de conversores -->
+    <converter>
+        <converter-id>estadoConverter</converter-id>
+        <converter-class>com.teste.sinerji.presentation.converter.EstadoConverter</converter-class>
+    </converter>
+    
+    <converter>
+        <converter-id>sexoConverter</converter-id>
+        <converter-class>com.teste.sinerji.presentation.converter.SexoConverter</converter-class>
+    </converter>
+</faces-config>

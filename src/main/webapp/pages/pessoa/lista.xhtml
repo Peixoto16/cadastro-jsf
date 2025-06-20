@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="title">Pessoas - Cadastro de Pessoas</ui:define>
+
+    <ui:define name="content">
+        <h:form id="formListagem">
+            <div class="card">
+                <h1 class="page-title">Gerenciamento de Pessoas</h1>
+                
+                <p:toolbar styleClass="mb-3">
+                    <p:toolbarGroup>
+                        <p:commandButton value="Nova Pessoa" icon="pi pi-plus" 
+                                         actionListener="#{pessoaController.novaPessoa}"
+                                         update=":formCadastro" 
+                                         oncomplete="PF('dlgCadastro').show()"
+                                         styleClass="ui-button-success" />
+                    </p:toolbarGroup>
+                    
+                    <p:toolbarGroup align="right">
+                        <div class="ui-inputgroup">
+                            <p:inputText id="filtroNome" value="#{pessoaController.filtroNome}" 
+                                         placeholder="Buscar por nome" />
+                            <p:commandButton icon="pi pi-search" 
+                                             actionListener="#{pessoaController.filtrarPessoas}"
+                                             update="tabelaPessoas" />
+                            <p:commandButton icon="pi pi-times" 
+                                             actionListener="#{pessoaController.limparFiltro}"
+                                             update="tabelaPessoas filtroNome" 
+                                             styleClass="ui-button-secondary" />
+                        </div>
+                    </p:toolbarGroup>
+                </p:toolbar>
+                
+                <p:dataTable id="tabelaPessoas" var="pessoa" value="#{pessoaController.pessoasFiltradas}"
+                             emptyMessage="Nenhuma pessoa encontrada" 
+                             styleClass="data-table"
+                             paginator="true" rows="10"
+                             paginatorPosition="bottom"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                             rowsPerPageTemplate="5,10,15">
+                    
+                    <p:column headerText="ID" sortBy="#{pessoa.id}" width="60">
+                        <h:outputText value="#{pessoa.id}" />
+                    </p:column>
+                    
+                    <p:column headerText="Nome" sortBy="#{pessoa.nome}">
+                        <h:outputText value="#{pessoa.nome}" />
+                    </p:column>
+                    
+                    <p:column headerText="CPF" sortBy="#{pessoa.cpf}">
+                        <h:outputText value="#{pessoa.cpf}" />
+                    </p:column>
+                    
+                    <p:column headerText="Data de Nascimento" sortBy="#{pessoa.dataNascimento}" width="150">
+                        <h:outputText value="#{pessoa.dataNascimento}">
+                            <f:convertDateTime pattern="dd/MM/yyyy" />
+                        </h:outputText>
+                    </p:column>
+                    
+                    <p:column headerText="Sexo" sortBy="#{pessoa.sexo}" width="100">
+    <h:outputText value="#{pessoa.sexo != null ? pessoa.sexo.descricao : ''}" />
+</p:column>
+                    
+                    <p:column headerText="Endereços" width="100">
+                        <h:outputText value="#{pessoa.enderecos.size()}" />
+                    </p:column>
+                    
+                    <p:column headerText="Ações" styleClass="data-table-actions" width="150">
+                        <p:commandButton icon="pi pi-pencil" 
+                                         actionListener="#{pessoaController.editarPessoa(pessoa)}"
+                                         update=":formCadastro" 
+                                         oncomplete="PF('dlgCadastro').show()"
+                                         styleClass="ui-button-warning mr-2" />
+                                         
+                        <p:commandButton icon="pi pi-trash" 
+                                         actionListener="#{pessoaController.removerPessoa(pessoa)}"
+                                         update="tabelaPessoas"
+                                         styleClass="ui-button-danger"
+                                         onclick="return confirm('Confirma a exclusão desta pessoa?');" />
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </h:form>
+        
+        <!-- Diálogo de Cadastro/Edição de Pessoa -->
+        <p:dialog header="Cadastro de Pessoa" widgetVar="dlgCadastro" modal="true"
+                  responsive="true" width="800" showEffect="fade" hideEffect="fade">
+            <h:form id="formCadastro">
+                <p:tabView>
+                    <p:tab title="Dados Pessoais">
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <p:outputLabel for="nome" value="Nome:" />
+                                <p:inputText id="nome" value="#{pessoaController.pessoa.nome}" 
+                                             required="true" requiredMessage="Nome é obrigatório"
+                                             styleClass="w-100" />
+                                <p:message for="nome" />
+                            </div>
+                            
+                            <div class="form-field">
+                                <p:outputLabel for="cpf" value="CPF:" />
+                                <p:inputMask id="cpf" value="#{pessoaController.pessoa.cpf}" 
+                                             mask="999.999.999-99" required="true" 
+                                             requiredMessage="CPF é obrigatório"
+                                             styleClass="w-100" />
+                                <p:message for="cpf" />
+                            </div>
+                            
+                            <div class="form-field">
+                                <p:outputLabel for="dataNascimento" value="Data de Nascimento:" />
+                                <p:inputMask id="dataNascimento" value="#{pessoaController.pessoa.dataNascimento}"
+                                             mask="99/99/9999" required="true" requiredMessage="Data de nascimento é obrigatória"
+                                             styleClass="w-100">
+    <f:convertDateTime pattern="dd/MM/yyyy" timeZone="America/Sao_Paulo" />
+</p:inputMask>
+                                <p:message for="dataNascimento" />
+                            </div>
+                            
+                            <div class="form-field">
+                                <p:outputLabel for="sexo" value="Sexo:" />
+                                <p:selectOneMenu id="sexo" value="#{pessoaController.pessoa.sexo}" 
+                                                 required="true" requiredMessage="Sexo é obrigatório"
+                                                 converter="sexoConverter" styleClass="w-100">
+                                    <f:selectItem itemLabel="Selecione..." itemValue="" noSelectionOption="true" />
+                                    <f:selectItems value="#{pessoaController.sexos}" var="sexo"
+                                                   itemLabel="#{sexo.descricao}" itemValue="#{sexo}" />
+                                </p:selectOneMenu>
+                                <p:message for="sexo" />
+                            </div>
+                            
+                            <div class="form-field">
+
+                            </div>
+                            
+                            <div class="form-field">
+
+                            </div>
+                        </div>
+                    </p:tab>
+                    
+                    <p:tab title="Endereços">
+                        <p:toolbar styleClass="mb-3">
+                            <p:toolbarGroup>
+                                <p:commandButton value="Novo Endereço" icon="pi pi-plus" 
+                                                 actionListener="#{pessoaController.novoEndereco}"
+                                                 update=":formEndereco" 
+                                                 oncomplete="PF('dlgEndereco').show()"
+                                                 styleClass="ui-button-success" />
+                            </p:toolbarGroup>
+                        </p:toolbar>
+                        
+                        <p:dataTable id="tabelaEnderecos" var="endereco" value="#{pessoaController.pessoa.enderecos}"
+                                     emptyMessage="Nenhum endereço cadastrado">
+                            <p:column headerText="Logradouro">
+                                <h:outputText value="#{endereco.logradouro}" />
+                            </p:column>
+                            
+                            <p:column headerText="Número" width="80">
+                                <h:outputText value="#{endereco.numero}" />
+                            </p:column>
+                            
+                            <p:column headerText="Cidade">
+                                <h:outputText value="#{endereco.cidade}" />
+                            </p:column>
+                            
+                            <p:column headerText="Estado" width="80">
+                                <h:outputText value="#{endereco.estado}" />
+                            </p:column>
+                            
+                            <p:column headerText="Ações" width="100">
+                                <p:commandButton icon="pi pi-pencil" 
+                                                 actionListener="#{pessoaController.editarEndereco(endereco)}"
+                                                 update=":formEndereco" 
+                                                 oncomplete="PF('dlgEndereco').show()"
+                                                 styleClass="ui-button-warning mr-2" />
+                                                 
+                                <p:commandButton icon="pi pi-trash" 
+                                                 actionListener="#{pessoaController.removerEndereco(endereco)}"
+                                                 update="tabelaEnderecos"
+                                                 styleClass="ui-button-danger" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+                
+                <div class="form-actions">
+                    <p:commandButton value="Salvar" icon="pi pi-save" 
+                                     actionListener="#{pessoaController.salvarPessoa}"
+                                     update=":formListagem:tabelaPessoas"
+                                     oncomplete="if (!args.validationFailed) PF('dlgCadastro').hide()"
+                                     styleClass="ui-button-primary" />
+                                     
+                    <p:commandButton value="Cancelar" icon="pi pi-times" 
+                                     onclick="PF('dlgCadastro').hide()"
+                                     styleClass="ui-button-secondary" />
+                </div>
+            </h:form>
+        </p:dialog>
+        
+        <!-- Diálogo de Cadastro/Edição de Endereço -->
+        <p:dialog header="Cadastro de Endereço" widgetVar="dlgEndereco" modal="true"
+                  responsive="true" width="600" showEffect="fade" hideEffect="fade">
+            <h:form id="formEndereco">
+                <div class="form-grid">
+                    <div class="form-field">
+                        <p:outputLabel for="cep" value="CEP:" />
+                        <p:inputMask id="cep" value="#{pessoaController.endereco.cep}"
+                                     mask="99999-999" required="true"
+                                     requiredMessage="CEP é obrigatório"
+                                     styleClass="w-100">
+                            <p:ajax event="blur" listener="#{pessoaController.buscarEnderecoPorCep}" 
+                                    update="logradouro cidade estado" global="false" />
+                        </p:inputMask>
+                        <p:message for="cep" />
+                    </div>
+
+                    <div class="form-field">
+                        <p:outputLabel for="logradouro" value="Logradouro:" />
+                        <p:inputText id="logradouro" value="#{pessoaController.endereco.logradouro}" 
+                                     required="true" requiredMessage="Logradouro é obrigatório"
+                                     styleClass="w-100" />
+                        <p:message for="logradouro" />
+                    </div>
+                    
+                    <div class="form-field">
+                        <p:outputLabel for="numero" value="Número:" />
+                        <p:inputText id="numero" value="#{pessoaController.endereco.numero}" 
+                                     required="true" requiredMessage="Número é obrigatório"
+                                     styleClass="w-100" />
+                        <p:message for="numero" />
+                    </div>
+                    
+                    <div class="form-field">
+                        <p:outputLabel for="cidade" value="Cidade:" />
+                        <p:inputText id="cidade" value="#{pessoaController.endereco.cidade}" 
+                                     required="true" requiredMessage="Cidade é obrigatória"
+                                     styleClass="w-100" />
+                        <p:message for="cidade" />
+                    </div>
+                    
+                    <div class="form-field">
+                        <p:outputLabel for="estado" value="Estado:" />
+                        <p:selectOneMenu id="estado" value="#{pessoaController.endereco.estado}" 
+                                         required="true" requiredMessage="Estado é obrigatório"
+                                         converter="estadoConverter" styleClass="w-100">
+                            <f:selectItem itemLabel="Selecione..." itemValue="" noSelectionOption="true" />
+                            <f:selectItems value="#{pessoaController.estados}" var="estado"
+                                           itemLabel="#{estado.nome}" itemValue="#{estado}" />
+                        </p:selectOneMenu>
+                        <p:message for="estado" />
+                    </div>
+
+                </div>
+                
+                <div class="form-actions">
+                    <p:commandButton value="Salvar" icon="pi pi-save" 
+                                     actionListener="#{pessoaController.salvarEndereco}"
+                                     update=":formCadastro"
+                                     oncomplete="if (!args.validationFailed) PF('dlgEndereco').hide()"
+                                     styleClass="ui-button-primary" />
+                                     
+                    <p:commandButton value="Cancelar" icon="pi pi-times" 
+                                     onclick="PF('dlgEndereco').hide()"
+                                     styleClass="ui-button-secondary" />
+                </div>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

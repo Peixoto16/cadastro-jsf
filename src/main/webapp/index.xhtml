@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/template.xhtml">
+
+    <ui:define name="title">Home - Cadastro de Pessoas</ui:define>
+
+    <ui:define name="content">
+        <h:form id="homeForm">
+            <div class="card">
+                <h1 class="page-title">Sistema de Cadastro de Pessoas</h1>
+                
+                <p:panel header="Painel de Controle" styleClass="mb-3">
+                    <div class="p-grid">
+                        <div class="p-col-12 p-md-4 p-lg-3">
+                            <p:panel header="Estatísticas" styleClass="mb-3">
+                                <div class="p-grid">
+                                    <!-- Card Total de Pessoas -->
+                                    <div class="p-col-12 p-mb-3">
+                                        <div style="background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%); color: white; border-radius: 8px; padding: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                                            <div style="display: flex; align-items: center;">
+                                                <i class="pi pi-users" style="font-size: 2.5rem; margin-right: 15px;"></i>
+                                                <div>
+                                                    <h3 style="margin: 0; font-size: 1.2rem;">Total de Pessoas</h3>
+                                                    <p:outputLabel value="#{pessoaController.pessoas.size()}" style="font-size: 1.8rem; font-weight: bold;" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Card Aniversariantes do Mês -->
+                                    <div class="p-col-12 p-mb-3">
+                                        <div style="background: linear-gradient(135deg, #FF9800 0%, #FFC107 100%); color: white; border-radius: 8px; padding: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-top: 10px;">
+                                            <div style="display: flex; align-items: center;">
+                                                <i class="pi pi-calendar" style="font-size: 2.5rem; margin-right: 15px;"></i>
+                                                <div>
+                                                    <h3 style="margin: 0; font-size: 1.2rem;">Aniversariantes do Mês</h3>
+                                                    <p:outputLabel value="#{pessoaController.aniversariantesDoMes}" style="font-size: 1.8rem; font-weight: bold;" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Card Distribuição de Gêneros -->
+                                    <div class="p-col-12">
+                                        <div style="background: linear-gradient(135deg, #2196F3 0%, #03A9F4 100%); color: white; border-radius: 8px; padding: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-top: 10px;">
+                                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                <i class="pi pi-users" style="font-size: 2.5rem; margin-right: 15px;"></i>
+                                                <h3 style="margin: 0; font-size: 1.2rem;">Distribuição de Gêneros</h3>
+                                            </div>
+                                            <div style="display: flex; flex-direction: column;">
+                                                <div style="display: flex; align-items: center; margin-bottom: 5px;">
+                                                    <i class="pi pi-user" style="color: #90CAF9; margin-right: 8px;"></i>
+                                                    <span>Homens: </span>
+                                                    <p:outputLabel value="#{pessoaController.porcentagemHomens}">
+    <f:convertNumber minFractionDigits="1" maxFractionDigits="1" locale="en"/>
+</p:outputLabel>%
+                                                </div>
+                                                <div style="display: flex; align-items: center;">
+                                                    <i class="pi pi-user" style="color: #F48FB1; margin-right: 8px;"></i>
+                                                    <span>Mulheres: </span>
+                                                    <p:outputLabel value="#{pessoaController.porcentagemMulheres}">
+    <f:convertNumber minFractionDigits="1" maxFractionDigits="1" locale="en"/>
+</p:outputLabel>%
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </p:panel>
+                        </div>
+                        <div class="p-col-12 p-md-8 p-lg-9">
+                            <p:panel header="Pessoas por Estado" styleClass="mb-3">
+                                <p:chart id="pessoasPorEstadoChart" type="bar" model="#{pessoaController.pessoasPorEstadoModel}"
+                                            style="width:100%;height:250px" responsive="true" />
+                            </p:panel>
+                        </div>
+                    </div>
+                </p:panel>
+                
+                <p:panel header="Pessoas Cadastradas" styleClass="mb-3">
+                    <p:panel header="Filtros Rápidos" toggleable="true" collapsed="true" styleClass="mb-3">
+                        <div class="p-grid">
+                            <div class="p-col-12 p-md-4 mb-3 pr-2">
+                                <p:outputLabel for="filtroNome" value="Nome:" />
+                                <p:inputText id="filtroNome" value="#{pessoaController.filtroNome}" styleClass="w-100" />
+                            </div>
+                            <div class="p-col-12 p-md-4 mb-3 pr-2">
+                                <p:outputLabel for="filtroCidade" value="Cidade:" />
+                                <p:inputText id="filtroCidade" value="#{pessoaController.filtroCidade}" styleClass="w-100" />
+                            </div>
+                            <div class="p-col-12 p-md-4 mb-3 pr-2">
+                                <p:outputLabel for="filtroEstado" value="Estado:" />
+                                <p:selectOneMenu id="filtroEstado" value="#{pessoaController.filtroEstado}" styleClass="w-100">
+                                    <f:selectItem itemLabel="Todos" itemValue="#{null}" />
+                                    <f:selectItems value="#{pessoaController.estados}" var="estado"
+                                                 itemLabel="#{estado.nome}" itemValue="#{estado}" />
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="p-col-12 p-md-4 mb-3 pr-2">
+                                <p:outputLabel for="filtroSexo" value="Sexo:" />
+                                <p:selectOneMenu id="filtroSexo" value="#{pessoaController.filtroSexo}" styleClass="w-100">
+                                    <f:selectItem itemLabel="Todos" itemValue="#{null}" />
+                                    <f:selectItems value="#{pessoaController.sexos}" var="sexo"
+                                                 itemLabel="#{sexo.descricao}" itemValue="#{sexo}" />
+                                </p:selectOneMenu>
+                            </div>
+                            <div class="p-col-12 text-right">
+                                <p:commandButton value="Filtrar" icon="pi pi-search" 
+                                               action="#{pessoaController.filtrarPessoas}"
+                                               update="tabelaPessoas" styleClass="mr-2" />
+                                <p:commandButton value="Limpar Filtros" icon="pi pi-times" 
+                                               action="#{pessoaController.limparFiltros}"
+                                               update="homeForm:filtroNome homeForm:filtroCidade homeForm:filtroEstado homeForm:filtroSexo tabelaPessoas" />
+                            </div>
+                        </div>
+                    </p:panel>
+                    <p:dataTable id="tabelaPessoas" value="#{pessoaController.pessoasFiltradas}" var="pessoa"
+                                 emptyMessage="Nenhuma pessoa encontrada" rows="5" paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 paginatorPosition="bottom"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                 rowsPerPageTemplate="5,10,15" styleClass="mt-2">
+                        
+                        <p:column headerText="Nome" sortBy="#{pessoa.nome}">
+                            <h:outputText value="#{pessoa.nome}" />
+                        </p:column>
+                        
+                        <p:column headerText="CPF" sortBy="#{pessoa.cpf}">
+                            <h:outputText value="#{pessoa.cpf}" />
+                        </p:column>
+                        
+                        <p:column headerText="Data Nascimento" sortBy="#{pessoa.dataNascimento}">
+                            <h:outputText value="#{pessoa.dataNascimento}">
+                                <f:convertDateTime pattern="dd/MM/yyyy" />
+                            </h:outputText>
+                        </p:column>
+                        
+                        <p:column headerText="Sexo" sortBy="#{pessoa.sexo}">
+                            <h:outputText value="#{pessoa.sexo.descricao}" />
+                        </p:column>
+                        
+                        <p:column headerText="Cidade" sortBy="#{not empty pessoa.enderecos ? pessoa.enderecos[0].cidade : ''}">
+                            <h:outputText value="#{not empty pessoa.enderecos ? pessoa.enderecos[0].cidade : ''}" />
+                        </p:column>
+                        
+                        <p:column headerText="Estado" sortBy="#{not empty pessoa.enderecos ? pessoa.enderecos[0].estado.nome : ''}">
+                            <h:outputText value="#{not empty pessoa.enderecos ? pessoa.enderecos[0].estado.nome : ''}" />
+                        </p:column>
+                        
+
+                    </p:dataTable>
+                    
+                    <div class="mt-3">
+                        <p:commandButton value="Exportar Excel" icon="pi pi-file-excel" styleClass="mr-2">
+                            <p:dataExporter type="xlsx" target="tabelaPessoas" fileName="pessoas" 
+                                           datasetName="Pessoas Cadastradas" exportHeader="true" />
+                        </p:commandButton>
+                        <p:commandButton value="Exportar PDF" icon="pi pi-file-pdf" styleClass="mr-2">
+                            <p:dataExporter type="pdf" target="tabelaPessoas" fileName="pessoas" 
+                                           datasetName="Pessoas Cadastradas" exportHeader="true" />
+                        </p:commandButton>
+                        <p:commandButton value="Exportar CSV" icon="pi pi-file-o">
+                            <p:dataExporter type="csv" target="tabelaPessoas" fileName="pessoas" 
+                                           datasetName="Pessoas Cadastradas" exportHeader="true" />
+                        </p:commandButton>
+                    </div>
+                </p:panel>
+            </div>
+        </h:form>
+    </ui:define>
+</ui:composition>
