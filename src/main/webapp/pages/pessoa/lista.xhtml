@@ -9,6 +9,9 @@
     <ui:define name="title">Pessoas - Cadastro de Pessoas</ui:define>
 
     <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{loginBean.checkAdmin}" />
+        </f:metadata>
         <h:form id="formListagem">
             <div class="card">
                 <h1 class="page-title">Gerenciamento de Pessoas</h1>

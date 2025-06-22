@@ -30,6 +30,15 @@
                             <p:menuitem value="Home" outcome="/index.xhtml" icon="pi pi-home" />
                             <p:menuitem value="Pessoas" outcome="/pages/pessoa/lista.xhtml" icon="pi pi-users" />
                             <p:menuitem value="Sobre" outcome="/pages/sobre.xhtml" icon="pi pi-info-circle" />
+                            
+                            <f:facet name="options">
+                                <div class="p-d-flex p-ai-center" style="margin-right: 10px;">
+                                    <p:outputLabel value="Olá, #{loginBean.username}" style="margin-right: 10px;" rendered="#{loginBean.loggedIn}" />
+                                    <p:outputLabel value="[ADMIN]" style="color: #e74c3c; font-weight: bold; margin-right: 10px;" rendered="#{loginBean.admin}" />
+                                    <p:outputLabel value="[USER]" style="color: #3498db; font-weight: bold; margin-right: 10px;" rendered="#{loginBean.user}" />
+                                    <p:commandButton value="Sair" icon="pi pi-sign-out" action="#{loginBean.logout}" rendered="#{loginBean.loggedIn}" />
+                                </div>
+                            </f:facet>
                         </p:menubar>
                     </div>
                 </h:form>
