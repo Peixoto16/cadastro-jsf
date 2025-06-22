@@ -1,103 +1,77 @@
-# Sistema de Cadastro de Pessoas
+# Cadastro de Pessoas - Desafio Sinerji
 
-Sistema web Java EE para cadastro de pessoas e seus endereços, desenvolvido como demonstração de conhecimentos em desenvolvimento Java EE com arquitetura em camadas.
+Este projeto é uma aplicação web para cadastro e gerenciamento de pessoas, desenvolvida com a plataforma Jakarta EE. O sistema inclui funcionalidades de CRUD, controle de acesso baseado em papéis (`ADMIN` e `USER`) e exportação de dados.
 
-## Tecnologias Utilizadas
+---
 
-- **Backend:**
-  - Java EE 8
-  - EJB 3.2 para injeção de dependência e serviços
-  - JPA 2.2 com Hibernate para persistência
-  - Bean Validation para validação de dados
+## 1. Decisões Técnicas e Arquiteturais
 
-- **Frontend:**
-  - JSF 2.3 com Facelets
-  - PrimeFaces 12.0.0 para componentes UI
-  - HTML5, CSS3
+A arquitetura do sistema foi projetada para ser **simples, robusta e escalável**, seguindo os padrões consolidados do ecossistema Jakarta EE.
 
-- **Banco de Dados:**
-  - PostgreSQL
+- **Arquitetura em Camadas:** A aplicação é dividida em camadas claras (Apresentação, Controle, Persistência e Segurança) para garantir a separação de responsabilidades e facilitar a manutenção.
+- **Padrão MVC (Model-View-Controller):** Utilizamos o JSF, que implementa o padrão MVC, para separar a lógica de negócio (Controller), os dados (Model) e a interface do usuário (View).
+- **Injeção de Dependências (CDI):** O `Contexts and Dependency Injection` (CDI) é usado para gerenciar o ciclo de vida dos beans e desacoplar os componentes. Beans `@RequestScoped` são usados para ações pontuais, enquanto o `@SessionScoped` é usado para manter o estado do usuário logado.
+- **Persistência com JPA:** O `Jakarta Persistence API` (JPA) com Hibernate abstrai o acesso ao banco de dados, permitindo um desenvolvimento mais rápido e um código mais limpo, focado em objetos Java em vez de SQL.
 
-- **Ferramentas:**
-  - Maven para gerenciamento de dependências e build
-  - Lombok para redução de boilerplate
+### Justificativa de Frameworks e Bibliotecas
 
-## Arquitetura
+- **Jakarta EE 9+:** Plataforma padrão para desenvolvimento corporativo em Java, oferecendo APIs robustas para web, persistência e segurança.
+- **JSF (Jakarta Server Faces):** Framework padrão para construir UIs baseadas em componentes, simplificando o gerenciamento de estado e eventos da interface.
+- **PrimeFaces 12.0.0:** Biblioteca de componentes UI para JSF. Foi escolhida para acelerar o desenvolvimento do front-end com componentes ricos e prontos para uso (tabelas, diálogos, etc.), garantindo uma melhor experiência do usuário (UX) com menos esforço.
+- **Maven:** Ferramenta de automação de build e gerenciamento de dependências, essencial para manter a consistência do projeto.
 
-O sistema foi desenvolvido seguindo uma arquitetura em camadas bem definidas:
+---
 
-### 1. Domain Layer (Camada de Domínio)
-- **Entidades:** Classes que representam o modelo de domínio (Pessoa, Endereco)
-- **Enums:** Valores enumerados (Sexo, Estado)
-- **Value Objects:** Objetos imutáveis que representam conceitos do domínio
+## 2. Como Compilar e Executar o Projeto
 
-### 2. Application Layer (Camada de Aplicação)
-- **Serviços:** Implementam a lógica de negócio (PessoaService, EnderecoService)
-- **DTOs:** Objetos de transferência de dados (PessoaDTO, EnderecoDTO)
-- **Mappers:** Convertem entre entidades e DTOs (PessoaMapper, EnderecoMapper)
+### Pré-requisitos
+- **Java 11** ou superior (JDK)
+- **Maven 3.6** ou superior
+- **Servidor de Aplicação Jakarta EE 9+** (Ex: Payara, WildFly, GlassFish)
+- **PostgreSQL** (ou outro banco de dados configurado no `persistence.xml`)
 
-### 3. Infrastructure Layer (Camada de Infraestrutura)
-- **Repositórios:** Acesso a dados via JPA (PessoaRepository, EnderecoRepository)
-- **Configurações:** Configurações de persistência e integração
+### Passos para Execução
 
-### 4. Presentation Layer (Camada de Apresentação)
-- **Controllers:** Managed Beans JSF (PessoaController)
-- **Views:** Páginas XHTML com componentes PrimeFaces
-- **Conversores:** Conversores JSF para tipos específicos
+1.  **Clone o repositório:**
+    ```bash
+    git clone <url-do-repositorio>
+    cd <pasta-do-projeto>
+    ```
 
-### 5. Shared Layer (Camada Compartilhada)
-- **Exceções:** Exceções customizadas (BusinessException, EntityNotFoundException)
-- **Utilitários:** Classes utilitárias compartilhadas
+2.  **Configure o Banco de Dados:**
+    - Crie um banco de dados no PostgreSQL.
+    - Abra o arquivo `src/main/resources/META-INF/persistence.xml` e ajuste as propriedades de conexão com o banco (URL, usuário e senha).
 
-## Funcionalidades
+3.  **Compile o projeto com Maven:**
+    - No terminal, na raiz do projeto, execute o comando:
+    ```bash
+    mvn clean package
+    ```
+    - Isso irá gerar o arquivo `cadastro-pessoa.war` (ou `ROOT.war`, dependendo da configuração no `pom.xml`) na pasta `target/`.
 
-- Cadastro, edição, listagem e exclusão de pessoas
-- Cadastro, edição, listagem e exclusão de endereços
-- Validação de dados em múltiplas camadas
-- Interface responsiva com PrimeFaces
-- Tratamento de exceções customizado
+4.  **Faça o Deploy no Servidor:**
+    - Inicie seu servidor de aplicação (Ex: Payara).
+    - Copie o arquivo `.war` gerado para a pasta de autodeploy do servidor (ex: `glassfish/domains/domain1/autodeploy/`).
 
-## Estrutura do Projeto
+5.  **Acesse a Aplicação:**
+    - Abra o navegador e acesse a URL da aplicação. Por padrão:
+    `http://localhost:8080/cadastro-pessoa/`
 
-```
-src/
-├── main/
-│   ├── java/
-│   │   └── com/teste/sinerji/
-│   │       ├── application/
-│   │       │   ├── dto/
-│   │       │   ├── mapper/
-│   │       │   └── service/
-│   │       ├── domain/
-│   │       │   ├── entity/
-│   │       │   └── enums/
-│   │       ├── infrastructure/
-│   │       │   └── repository/
-│   │       ├── presentation/
-│   │       │   ├── controller/
-│   │       │   └── converter/
-│   │       └── shared/
-│   │           └── exception/
-│   ├── resources/
-│   │   └── META-INF/
-│   │       └── persistence.xml
-│   └── webapp/
-│       ├── WEB-INF/
-│       │   ├── beans.xml
-│       │   ├── faces-config.xml
-│       │   ├── web.xml
-│       │   └── templates/
-│       ├── resources/
-│       │   ├── css/
-│       │   └── images/
-│       ├── pages/
-│       │   └── pessoa/
-│       └── index.xhtml
-└── test/
-    └── java/
-```
+---
 
-## Configuração e Execução
+## 3. Como Executar os Testes
+
+Atualmente, o projeto não possui uma suíte de testes automatizados implementada. Para executar testes, o processo é manual, seguindo os fluxos da aplicação.
+
+---
+
+## 4. Notas Adicionais
+
+- **Segurança:** A segurança foi implementada de forma pragmática, utilizando um **Filtro de Servlet** para interceptar requisições e um **Bean de Sessão** para controlar o estado do usuário. Esta abordagem é simples, segura e fácil de auditar, evitando a complexidade do Jakarta Security para este escopo.
+- **Usuários Hardcoded:** Para fins de demonstração, os usuários estão hardcoded no `LoginBean.java`:
+  - **Admin:** `admin` / `admin`
+  - **User:** `user` / `user`
+- **Context Path:** O `pom.xml` foi configurado para gerar o artefato com o nome `cadastro-pessoa.war`, removendo o sufixo de versão da URL e tornando-a mais limpa.
 
 ### Pré-requisitos
 

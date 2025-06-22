@@ -1,4 +1,4 @@
-package com.teste.sinerji.security;
+package com.teste.sinerji.shared.security;
 
 import com.teste.sinerji.presentation.controller.LoginBean;
 
