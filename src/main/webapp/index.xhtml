@@ -90,8 +90,8 @@
                     <p:panel header="Filtros Rápidos" toggleable="true" collapsed="true" styleClass="mb-3">
                         <div class="p-grid">
                             <div class="p-col-12 p-md-4 mb-3 pr-2">
-                                <p:outputLabel for="filtroNome" value="Nome:" />
-                                <p:inputText id="filtroNome" value="#{pessoaController.filtroNome}" styleClass="w-100" />
+                                <p:outputLabel for="filtroCpf" value="CPF:" />
+                                <p:inputMask id="filtroCpf" value="#{pessoaController.filtroCpf}" mask="999.999.999-99" styleClass="w-100" />
                             </div>
                             <div class="p-col-12 p-md-4 mb-3 pr-2">
                                 <p:outputLabel for="filtroCidade" value="Cidade:" />
@@ -119,7 +119,7 @@
                                                update="tabelaPessoas" styleClass="mr-2" />
                                 <p:commandButton value="Limpar Filtros" icon="pi pi-times" 
                                                action="#{pessoaController.limparFiltros}"
-                                               update="homeForm:filtroNome homeForm:filtroCidade homeForm:filtroEstado homeForm:filtroSexo tabelaPessoas" />
+                                               update="homeForm:filtroCpf homeForm:filtroCidade homeForm:filtroEstado homeForm:filtroSexo tabelaPessoas" />
                             </div>
                         </div>
                     </p:panel>
@@ -138,10 +138,8 @@
                             <h:outputText value="#{pessoa.cpf}" />
                         </p:column>
                         
-                        <p:column headerText="Data Nascimento" sortBy="#{pessoa.dataNascimento}">
-                            <h:outputText value="#{pessoa.dataNascimento}">
-                                <f:convertDateTime pattern="dd/MM/yyyy" />
-                            </h:outputText>
+                        <p:column headerText="Idade" sortBy="#{pessoa.idade}">
+                            <h:outputText value="#{pessoa.idade} anos" />
                         </p:column>
                         
                         <p:column headerText="Sexo" sortBy="#{pessoa.sexo}">

@@ -1,24 +1,39 @@
 # Cadastro de Pessoas - Desafio Sinerji
 
-Este projeto é uma aplicação web para cadastro e gerenciamento de pessoas, desenvolvida com a plataforma Jakarta EE. O sistema inclui funcionalidades de CRUD, controle de acesso baseado em papéis (`ADMIN` e `USER`) e exportação de dados.
+## Sumário
+
+- [Descrição](#descrição)
+- [Arquitetura](#arquitetura)
+- [Pré-requisitos](#pré-requisitos)
+- [Como Executar](#como-executar)
+- [Como Executar os Testes](#como-executar-os-testes)
+- [Boas Práticas Implementadas](#boas-práticas-implementadas)
+
+Este projeto é uma aplicação web para cadastro e gerenciamento de pessoas, desenvolvida com a plataforma Jakarta. O sistema inclui funcionalidades de CRUD, controle de acesso baseado em papéis (`ADMIN` e `USER`) e exportação de dados, integração com api de cep para busca de endereço e testes unitários e de integração.
 
 ---
 
 ## 1. Decisões Técnicas e Arquiteturais
 
-A arquitetura do sistema foi projetada para ser **simples, robusta e escalável**, seguindo os padrões consolidados do ecossistema Jakarta EE.
+A arquitetura foi pensada para ser simples, robusta e fácil de manter, seguindo boas práticas do ecossistema Jakarta.
 
-- **Arquitetura em Camadas:** A aplicação é dividida em camadas claras (Apresentação, Controle, Persistência e Segurança) para garantir a separação de responsabilidades e facilitar a manutenção.
-- **Padrão MVC (Model-View-Controller):** Utilizamos o JSF, que implementa o padrão MVC, para separar a lógica de negócio (Controller), os dados (Model) e a interface do usuário (View).
-- **Injeção de Dependências (CDI):** O `Contexts and Dependency Injection` (CDI) é usado para gerenciar o ciclo de vida dos beans e desacoplar os componentes. Beans `@RequestScoped` são usados para ações pontuais, enquanto o `@SessionScoped` é usado para manter o estado do usuário logado.
-- **Persistência com JPA:** O `Jakarta Persistence API` (JPA) com Hibernate abstrai o acesso ao banco de dados, permitindo um desenvolvimento mais rápido e um código mais limpo, focado em objetos Java em vez de SQL.
+- **Camadas bem definidas:** Separação clara entre apresentação, controle, persistência e segurança.
+- **MVC com JSF:** Interface, lógica e dados separados de forma organizada.
+- **CDI:** Injeção de dependências para facilitar o gerenciamento dos componentes e do ciclo de vida dos beans.
+- **JPA com Hibernate:** Persistência de dados feita de forma simples e orientada a objetos, sem SQL direto no código.
 
 ### Justificativa de Frameworks e Bibliotecas
 
-- **Jakarta EE 9+:** Plataforma padrão para desenvolvimento corporativo em Java, oferecendo APIs robustas para web, persistência e segurança.
-- **JSF (Jakarta Server Faces):** Framework padrão para construir UIs baseadas em componentes, simplificando o gerenciamento de estado e eventos da interface.
-- **PrimeFaces 12.0.0:** Biblioteca de componentes UI para JSF. Foi escolhida para acelerar o desenvolvimento do front-end com componentes ricos e prontos para uso (tabelas, diálogos, etc.), garantindo uma melhor experiência do usuário (UX) com menos esforço.
-- **Maven:** Ferramenta de automação de build e gerenciamento de dependências, essencial para manter a consistência do projeto.
+- **Jakarta EE 9+:** Base para toda a aplicação, fornece as APIs essenciais para desenvolvimento web, persistência, segurança e injeção de dependências.
+- **JSF (Jakarta Server Faces):** Usado para criar as páginas web de forma estruturada, facilitando a ligação entre tela e backend.
+- **PrimeFaces 12:** Amplia o JSF com componentes visuais prontos (tabelas, filtros, diálogos, exportação de dados, máscaras de campo), acelerando o desenvolvimento e melhorando a experiência do usuário.
+- **Maven:** Gerencia as dependências, plugins e o ciclo de build, garantindo reprodutibilidade e facilidade de atualização do projeto.
+- **Hibernate (JPA):** Responsável pelo mapeamento objeto-relacional, simplificando o acesso e manipulação dos dados no banco.
+- **H2:** Banco em memória utilizado nos testes de integração, permitindo validação isolada da lógica de persistência.
+- **JUnit 5:** Base dos testes automatizados, garantindo qualidade e segurança nas evoluções do sistema.
+- **Mockito:** Permite criar cenários de teste simulando comportamentos e dependências, essencial para testes unitários robustos.
+
+Essas escolhas garantem um ambiente moderno, produtivo, com foco em qualidade, facilidade de manutenção e pronta para evolução.
 
 ---
 
@@ -27,15 +42,15 @@ A arquitetura do sistema foi projetada para ser **simples, robusta e escalável*
 ### Pré-requisitos
 - **Java 11** ou superior (JDK)
 - **Maven 3.6** ou superior
-- **Servidor de Aplicação Jakarta EE 9+** (Ex: Payara, WildFly, GlassFish)
+- **Servidor de Aplicação Jakarta EE 9+** (WildFly)
 - **PostgreSQL** (ou outro banco de dados configurado no `persistence.xml`)
 
 ### Passos para Execução
 
 1.  **Clone o repositório:**
     ```bash
-    git clone <url-do-repositorio>
-    cd <pasta-do-projeto>
+    git clone git@github.com:Peixoto16/cadastro-jsf.git
+    cd cadastro-jsf
     ```
 
 2.  **Configure o Banco de Dados:**
@@ -50,18 +65,50 @@ A arquitetura do sistema foi projetada para ser **simples, robusta e escalável*
     - Isso irá gerar o arquivo `cadastro-pessoa.war` (ou `ROOT.war`, dependendo da configuração no `pom.xml`) na pasta `target/`.
 
 4.  **Faça o Deploy no Servidor:**
-    - Inicie seu servidor de aplicação (Ex: Payara).
-    - Copie o arquivo `.war` gerado para a pasta de autodeploy do servidor (ex: `glassfish/domains/domain1/autodeploy/`).
+     - Inicie seu servidor de aplicação (WildFly) normalmente.
 
 5.  **Acesse a Aplicação:**
     - Abra o navegador e acesse a URL da aplicação. Por padrão:
-    `http://localhost:8080/cadastro-pessoa/`
+    `http://localhost:8080/cadastro-pessoa/login.xhtml`
 
 ---
 
 ## 3. Como Executar os Testes
 
-Atualmente, o projeto não possui uma suíte de testes automatizados implementada. Para executar testes, o processo é manual, seguindo os fluxos da aplicação.
+O projeto possui uma suíte completa de testes unitários e de integração implementada com JUnit 5, Mockito e H2 (banco em memória).
+
+### Executando Todos os Testes
+
+```bash
+mvn clean test
+```
+
+### Executando Apenas Testes Unitários (excluindo testes de integração)
+
+```bash
+mvn -Dtest='!*IT' test
+```
+
+### Executando Apenas Testes de Integração
+
+```bash
+mvn -Dtest='*IT' test
+```
+
+### Executando um Teste Específico
+
+```bash
+mvn -Dtest=NomeDoTeste test
+```
+
+Exemplo: `mvn -Dtest=PessoaServiceTest test`
+
+### Cobertura de Testes
+
+Os testes cobrem os principais componentes da aplicação:
+
+- **Testes Unitários**: Validam o comportamento isolado de classes como `PessoaService`, `LoginBean` e `AuthFilter`.
+- **Testes de Integração**: Validam a integração entre componentes, especialmente com o banco de dados H2 em memória.
 
 ---
 
@@ -78,7 +125,7 @@ Atualmente, o projeto não possui uma suíte de testes automatizados implementad
 - Java 11 ou superior
 - PostgreSQL 12 ou superior
 - Maven 3.6 ou superior
-- Servidor de aplicação compatível com Java EE 8 (WildFly, GlassFish, etc.)
+- Servidor de aplicação compatível com Java EE 8 (WildFly)
 
 ### Configuração do Banco de Dados
 
@@ -94,7 +141,7 @@ Atualmente, o projeto não possui uma suíte de testes automatizados implementad
    mvn clean package
    ```
 4. Implante o arquivo WAR gerado no servidor de aplicação
-5. Acesse a aplicação em: `http://localhost:8080/teste-sinerji/`
+5. Acesse a aplicação em: `http://localhost:8080/cadastro-pessoa/login.xhtml`
 
 ## Boas Práticas Implementadas
 
@@ -107,12 +154,10 @@ Atualmente, o projeto não possui uma suíte de testes automatizados implementad
 - **Encapsulamento:** Proteção do estado interno das entidades
 - **Código Limpo:** Nomes significativos, métodos pequenos e coesos
 - **Documentação:** Javadoc em classes e métodos importantes
+- **Testes Automatizados:**
+    - Testes unitários com JUnit 5 e Mockito para lógica de negócio, beans e filtros.
+    - Testes de integração com banco H2 em memória simulando cenários reais.
+    - Cobertura de casos de sucesso, exceções e validações.
+    - Isolamento de dependências com mocks e injeção manual em filtros.
 
-## Melhorias Futuras
 
-- Implementação de testes unitários e de integração
-- Implementação de autenticação e autorização
-- Containerização com Docker
-- Implementação de API REST
-- Melhorias de UX/UI
-- Implementação de logs e monitoramento

@@ -61,7 +61,7 @@ public class PessoaController implements Serializable {
     
     // Filtros
     @Getter @Setter
-    private String filtroNome;
+    private String filtroCpf;
     
     @Getter @Setter
     private String filtroCidade;
@@ -228,8 +228,8 @@ public class PessoaController implements Serializable {
     public void filtrarPessoas() {
         try {
             pessoasFiltradas = pessoas.stream()
-                .filter(p -> filtroNome == null || filtroNome.isEmpty() || 
-                         (p.getNome() != null && p.getNome().toLowerCase().contains(filtroNome.toLowerCase())))
+                .filter(p -> filtroCpf == null || filtroCpf.isEmpty() || 
+                         (p.getCpf() != null && p.getCpf().replace(".", "").replace("-", "").contains(filtroCpf.replace(".", "").replace("-", ""))))
                 .filter(p -> filtroSexo == null || 
                          (p.getSexo() != null && p.getSexo().equals(filtroSexo)))
                 .filter(p -> {
@@ -276,7 +276,7 @@ public class PessoaController implements Serializable {
      * Limpa todos os filtros e restaura a lista completa.
      */
     public void limparFiltros() {
-        filtroNome = null;
+        filtroCpf = null;
         filtroCidade = null;
         filtroEstado = null;
         filtroSexo = null;

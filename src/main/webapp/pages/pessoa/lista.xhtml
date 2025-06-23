@@ -27,14 +27,14 @@
                     
                     <p:toolbarGroup align="right">
                         <div class="ui-inputgroup">
-                            <p:inputText id="filtroNome" value="#{pessoaController.filtroNome}" 
-                                         placeholder="Buscar por nome" />
+                            <p:inputMask id="filtroCpf" value="#{pessoaController.filtroCpf}" mask="999.999.999-99" 
+                                         placeholder="Buscar por CPF" />
                             <p:commandButton icon="pi pi-search" 
                                              actionListener="#{pessoaController.filtrarPessoas}"
                                              update="tabelaPessoas" />
                             <p:commandButton icon="pi pi-times" 
                                              actionListener="#{pessoaController.limparFiltro}"
-                                             update="tabelaPessoas filtroNome" 
+                                             update="tabelaPessoas filtroCpf" 
                                              styleClass="ui-button-secondary" />
                         </div>
                     </p:toolbarGroup>

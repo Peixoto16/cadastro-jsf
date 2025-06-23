@@ -88,14 +88,7 @@ public class PessoaService implements Serializable {
         try {
             pessoa = pessoaRepository.salvar(pessoa);
         } catch (Exception e) {
-            Throwable cause = e;
-            while (cause != null) {
-                String msg = cause.getMessage();
-                if (msg != null && msg.toLowerCase().contains("cpf")) {
-                    throw new BusinessException("Já existe um usuário cadastrado com esse CPF.");
-                }
-                cause = cause.getCause();
-            }
+            verificarCpfDuplicado(e);
             throw e;
         }
 
@@ -124,7 +117,12 @@ public class PessoaService implements Serializable {
         validarPessoa(dto);
         
         Pessoa pessoa = pessoaMapper.toEntity(dto);
-        pessoa = pessoaRepository.salvar(pessoa);
+        try {
+            pessoa = pessoaRepository.salvar(pessoa);
+        } catch (Exception e) {
+            verificarCpfDuplicado(e);
+            throw e;
+        }
         
         return pessoaMapper.toDTO(pessoa);
     }
@@ -187,7 +185,29 @@ public class PessoaService implements Serializable {
         }
     }
 
-    // Validação de CPF baseada no algoritmo oficial
+    /**
+     * Verifica se a exceção contém mensagem relacionada a CPF duplicado
+     * 
+     * @param e A exceção a ser verificada
+     * @throws BusinessException Se for detectado CPF duplicado
+     */
+    private void verificarCpfDuplicado(Exception e) throws BusinessException {
+        Throwable cause = e;
+        while (cause != null) {
+            String msg = cause.getMessage();
+            if (msg != null && msg.toLowerCase().contains("cpf")) {
+                throw new BusinessException("Já existe um usuário cadastrado com esse CPF.");
+            }
+            cause = cause.getCause();
+        }
+    }
+    
+    /**
+     * Validação de CPF baseada no algoritmo oficial
+     * 
+     * @param cpf O CPF a ser validado
+     * @return true se o CPF for válido, false caso contrário
+     */
     private boolean isCpfValido(String cpf) {
         if (cpf == null) return false;
         cpf = cpf.replaceAll("\\D", "");

@@ -31,21 +31,49 @@ public class AuthFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         
-        // Obtém o caminho da requisição
-        String requestPath = httpRequest.getRequestURI().substring(httpRequest.getContextPath().length());
+        String requestPath = getRequestPath(httpRequest);
         
-        // Verifica se é a página de login ou recursos estáticos
-        boolean isLoginPage = requestPath.equals("/login.xhtml");
-        boolean isResourceRequest = requestPath.startsWith("/jakarta.faces.resource/") || 
-                                   requestPath.startsWith("/javax.faces.resource/");
-        
-        if (isLoginPage || isResourceRequest || loginBean.isLoggedIn()) {
-            // Se for a página de login, recursos estáticos ou usuário autenticado, continua a requisição
+        if (isPublicResource(requestPath) || loginBean.isLoggedIn()) {
+            // Se for recurso público ou usuário autenticado, continua a requisição
             chain.doFilter(request, response);
         } else {
             // Caso contrário, redireciona para a página de login
-            httpResponse.sendRedirect(httpRequest.getContextPath() + "/login.xhtml");
+            redirectToLogin(httpRequest, httpResponse);
         }
+    }
+    
+    /**
+     * Obtém o caminho da requisição sem o contexto da aplicação
+     * 
+     * @param request A requisição HTTP
+     * @return O caminho da requisição
+     */
+    private String getRequestPath(HttpServletRequest request) {
+        return request.getRequestURI().substring(request.getContextPath().length());
+    }
+    
+    /**
+     * Verifica se o recurso solicitado é público (página de login ou recursos estáticos)
+     * 
+     * @param path O caminho da requisição
+     * @return true se for um recurso público, false caso contrário
+     */
+    private boolean isPublicResource(String path) {
+        boolean isLoginPage = path.equals("/login.xhtml");
+        boolean isResourceRequest = path.startsWith("/jakarta.faces.resource/") || 
+                                  path.startsWith("/javax.faces.resource/");
+        return isLoginPage || isResourceRequest;
+    }
+    
+    /**
+     * Redireciona para a página de login
+     * 
+     * @param request A requisição HTTP
+     * @param response A resposta HTTP
+     * @throws IOException Se ocorrer um erro de I/O durante o redirecionamento
+     */
+    private void redirectToLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.sendRedirect(request.getContextPath() + "/login.xhtml");
     }
 
     @Override
