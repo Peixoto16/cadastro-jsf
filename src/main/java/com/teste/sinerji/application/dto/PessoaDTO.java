@@ -58,7 +58,6 @@ public class PessoaDTO implements Serializable {
             return null;
         }
         
-        // Calcula a idade com base na data de nascimento
         long diffInMillies = new Date().getTime() - dataNascimento.getTime();
         long diffInDays = diffInMillies / (1000 * 60 * 60 * 24);
         return (int) (diffInDays / 365.25);

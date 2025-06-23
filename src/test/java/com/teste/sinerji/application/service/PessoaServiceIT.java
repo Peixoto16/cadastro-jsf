@@ -38,13 +38,11 @@ class PessoaServiceIT {
 
     @BeforeAll
     static void setUpClass() {
-        // Inicializa o EntityManagerFactory com a unidade de persistência de teste
         emf = Persistence.createEntityManagerFactory("TestePU");
     }
 
     @AfterAll
     static void tearDownClass() {
-        // Fecha o EntityManagerFactory ao final dos testes
         if (emf != null && emf.isOpen()) {
             emf.close();
         }
@@ -52,33 +50,29 @@ class PessoaServiceIT {
 
     @BeforeEach
     void setUp() {
-        // Inicializa o EntityManager antes de cada teste
         em = emf.createEntityManager();
         
-        // Inicializa o repositório com o EntityManager
         pessoaRepository = new PessoaRepository();
         setEntityManager(pessoaRepository, em);
         
-        // Inicializa o mapper
         pessoaMapper = new PessoaMapper();
         
-        // Inicializa o serviço com o repositório e mapper
         pessoaService = new PessoaService();
         setPessoaRepository(pessoaService, pessoaRepository);
         setPessoaMapper(pessoaService, pessoaMapper);
         
-        // Inicia uma transação
         em.getTransaction().begin();
     }
 
     @AfterEach
     void tearDown() {
-        // Reverte a transação após cada teste para manter o banco limpo
         if (em.getTransaction().isActive()) {
             em.getTransaction().rollback();
         }
         
-        // Fecha o EntityManager
+        if (em.isOpen()) {
+            em.close();
+        }
         if (em.isOpen()) {
             em.close();
         }
@@ -87,24 +81,19 @@ class PessoaServiceIT {
     @Test
     @DisplayName("Deve salvar e recuperar pessoa")
     void deveSalvarERecuperarPessoa() throws BusinessException, EntityNotFoundException {
-        // Arrange
         PessoaDTO pessoaDTO = new PessoaDTO();
         pessoaDTO.setNome("João da Silva");
         pessoaDTO.setCpf("529.982.247-25"); // CPF válido
         pessoaDTO.setDataNascimento(criarData(1990, 1, 1));
         pessoaDTO.setSexo(Sexo.M);
 
-        // Act
         PessoaDTO pessoaSalva = pessoaService.salvar(pessoaDTO);
         
-        // Commit para persistir os dados
         em.getTransaction().commit();
         em.getTransaction().begin();
         
-        // Busca a pessoa salva
         PessoaDTO pessoaRecuperada = pessoaService.buscarPorId(pessoaSalva.getId());
 
-        // Assert
         assertNotNull(pessoaSalva.getId());
         assertEquals("João da Silva", pessoaRecuperada.getNome());
         assertEquals("529.982.247-25", pessoaRecuperada.getCpf());
@@ -115,8 +104,6 @@ class PessoaServiceIT {
     @Test
     @DisplayName("Deve listar todas as pessoas")
     void deveListarTodasAsPessoas() throws BusinessException {
-        // Arrange
-        // Cria e salva 3 pessoas
         for (int i = 1; i <= 3; i++) {
             PessoaDTO pessoaDTO = new PessoaDTO();
             pessoaDTO.setNome("Pessoa " + i);
@@ -127,22 +114,16 @@ class PessoaServiceIT {
             pessoaService.salvar(pessoaDTO);
         }
         
-        // Commit para persistir os dados
         em.getTransaction().commit();
         em.getTransaction().begin();
 
-        // Act
         List<PessoaDTO> pessoas = pessoaService.listarTodas();
-
-        // Assert
         assertEquals(3, pessoas.size());
     }
 
     @Test
     @DisplayName("Deve buscar pessoas por nome")
     void deveBuscarPessoasPorNome() throws BusinessException {
-        // Arrange
-        // Cria e salva pessoas com nomes diferentes
         PessoaDTO pessoa1 = new PessoaDTO();
         pessoa1.setNome("Maria Oliveira");
         pessoa1.setCpf("529.982.247-25");
@@ -164,14 +145,10 @@ class PessoaServiceIT {
         pessoa3.setSexo(Sexo.F);
         pessoaService.salvar(pessoa3);
         
-        // Commit para persistir os dados
         em.getTransaction().commit();
         em.getTransaction().begin();
 
-        // Act
         List<PessoaDTO> pessoasSilva = pessoaService.buscarPorNome("Silva");
-
-        // Assert
         assertEquals(1, pessoasSilva.size());
         assertTrue(pessoasSilva.stream().anyMatch(p -> p.getNome().equals("Maria Silva")));
     }
@@ -179,7 +156,6 @@ class PessoaServiceIT {
     @Test
     @DisplayName("Deve atualizar pessoa existente")
     void deveAtualizarPessoaExistente() throws BusinessException, EntityNotFoundException {
-        // Arrange
         PessoaDTO pessoaDTO = new PessoaDTO();
         pessoaDTO.setNome("João Pereira");
         pessoaDTO.setCpf("070.672.730-86");
@@ -188,34 +164,27 @@ class PessoaServiceIT {
         
         PessoaDTO pessoaSalva = pessoaService.salvar(pessoaDTO);
         
-        // Commit para persistir os dados
         em.getTransaction().commit();
         em.getTransaction().begin();
         
-        // Atualiza os dados
         pessoaSalva.setNome("Nome Atualizado");
         pessoaSalva.setDataNascimento(criarData(1990, 2, 2));
 
-        // Act
         pessoaService.atualizar(pessoaDTO);
         
-        // Commit para persistir os dados
         em.getTransaction().commit();
         em.getTransaction().begin();
         
-        // Busca a pessoa atualizada
         PessoaDTO pessoaRecuperada = pessoaService.buscarPorId(pessoaSalva.getId());
 
-        // Assert
         assertEquals("Nome Atualizado", pessoaRecuperada.getNome());
         assertEquals(criarData(1990, 2, 2), pessoaRecuperada.getDataNascimento());
-        assertEquals("529.982.247-25", pessoaRecuperada.getCpf()); // CPF não deve mudar
+        assertEquals("529.982.247-25", pessoaRecuperada.getCpf());
     }
 
     @Test
     @DisplayName("Deve remover pessoa existente")
     void deveRemoverPessoaExistente() throws BusinessException, EntityNotFoundException {
-        // Arrange
         PessoaDTO pessoaDTO = new PessoaDTO();
         pessoaDTO.setNome("Pessoa para Remover");
         pessoaDTO.setCpf("529.982.247-25");
@@ -224,28 +193,22 @@ class PessoaServiceIT {
         
         PessoaDTO pessoaSalva = pessoaService.salvar(pessoaDTO);
         
-        // Commit para persistir os dados
         em.getTransaction().commit();
         em.getTransaction().begin();
         
-        // Verifica que a pessoa existe
         assertNotNull(pessoaService.buscarPorId(pessoaSalva.getId()));
         
-        // Act
         pessoaService.remover(pessoaSalva.getId());
         
-        // Commit para persistir os dados
         em.getTransaction().commit();
         em.getTransaction().begin();
 
-        // Assert
         assertThrows(EntityNotFoundException.class, () -> pessoaService.buscarPorId(pessoaSalva.getId()));
     }
 
     @Test
     @DisplayName("Deve lançar exceção ao tentar salvar pessoa com CPF duplicado")
     void deveLancarExcecaoAoTentarSalvarPessoaComCpfDuplicado() throws BusinessException {
-        // Arrange
         PessoaDTO pessoa1 = new PessoaDTO();
         pessoa1.setNome("Pessoa 1");
         pessoa1.setCpf("529.982.247-25");
@@ -254,7 +217,6 @@ class PessoaServiceIT {
         
         pessoaService.salvar(pessoa1);
         
-        // Commit para persistir os dados
         em.getTransaction().commit();
         em.getTransaction().begin();
         
@@ -264,11 +226,8 @@ class PessoaServiceIT {
         pessoa2.setDataNascimento(criarData(1995, 5, 5));
         pessoa2.setSexo(Sexo.F);
 
-        // Act & Assert
         assertThrows(Exception.class, () -> pessoaService.salvar(pessoa2));
     }
-
-    // Métodos auxiliares para injeção de dependências via reflexão
     
     private void setEntityManager(PessoaRepository repository, EntityManager entityManager) {
         try {

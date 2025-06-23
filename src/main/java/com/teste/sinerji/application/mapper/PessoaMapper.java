@@ -66,7 +66,6 @@ public class PessoaMapper {
                 .sexo(dto.getSexo())
                 .build();
         
-        // Converte os endereços e estabelece o relacionamento bidirecional
         if (dto.getEnderecos() != null) {
             List<Endereco> enderecos = dto.getEnderecos().stream()
                     .map(enderecoDTO -> {

@@ -64,7 +64,6 @@ public class EnderecoMapper {
                 .cep(dto.getCep())
                 .build();
         
-        // Se tiver ID da pessoa, busca a entidade Pessoa
         if (dto.getPessoaId() != null) {
             Pessoa pessoa = em.find(Pessoa.class, dto.getPessoaId());
             endereco.setPessoa(pessoa);

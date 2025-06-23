@@ -111,7 +111,6 @@ public class PessoaService implements Serializable {
             throw new BusinessException("ID é obrigatório para atualização");
         }
         
-        // Verifica se a pessoa existe
         buscarPorId(dto.getId());
         
         validarPessoa(dto);

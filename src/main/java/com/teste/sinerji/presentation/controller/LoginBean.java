@@ -35,7 +35,6 @@ public class LoginBean implements Serializable {
             return "/index.xhtml?faces-redirect=true";
         }
         
-        // Login inválido
         FacesContext.getCurrentInstance().addMessage(null, 
             new FacesMessage(FacesMessage.SEVERITY_ERROR, "Usuário ou senha inválidos", null));
         return null;
@@ -78,24 +77,20 @@ public class LoginBean implements Serializable {
         return "USER".equals(role);
     }
 
-    // Método para ser chamado no preRenderView das páginas protegidas
     public void checkLogin() throws java.io.IOException {
         if (!isLoggedIn()) {
             jakarta.faces.context.FacesContext.getCurrentInstance().getExternalContext().redirect("login.xhtml");
         }
     }
 
-    // Método para ser chamado no preRenderView das páginas exclusivas de ADMIN
     public void checkAdmin() throws java.io.IOException {
         if (!isLoggedIn() || !isAdmin()) {
-            // Armazenar a mensagem de erro na sessão
             jakarta.faces.context.FacesContext facesContext = jakarta.faces.context.FacesContext.getCurrentInstance();
             facesContext.getExternalContext().getSessionMap().put("errorMessage", "Rota não autorizada para user !");
             facesContext.getExternalContext().redirect(facesContext.getExternalContext().getRequestContextPath() + "/index.xhtml");
         }
     }
     
-    // Método para verificar e exibir mensagens de erro da sessão
     public void checkErrorMessages() {
         jakarta.faces.context.FacesContext facesContext = jakarta.faces.context.FacesContext.getCurrentInstance();
         String errorMessage = (String) facesContext.getExternalContext().getSessionMap().get("errorMessage");
@@ -103,13 +98,10 @@ public class LoginBean implements Serializable {
         if (errorMessage != null) {
             facesContext.addMessage(null, new jakarta.faces.application.FacesMessage(
                     jakarta.faces.application.FacesMessage.SEVERITY_ERROR, errorMessage, null));
-            // Limpar a mensagem após exibi-la
             facesContext.getExternalContext().getSessionMap().remove("errorMessage");
         }
     }
 
-    // Getters e Setters
-    
     public String getUsername() {
         return username;
     }

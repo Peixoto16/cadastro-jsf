@@ -4,7 +4,6 @@
               xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-facesconfig_3_0.xsd"
               version="3.0">
               
-    <!-- Configuração de navegação -->
     <navigation-rule>
         <from-view-id>/index.xhtml</from-view-id>
         <navigation-case>
@@ -14,7 +13,6 @@
         </navigation-case>
     </navigation-rule>
     
-    <!-- Configuração de mensagens -->
     <application>
         <locale-config>
             <default-locale>pt_BR</default-locale>
@@ -28,7 +26,6 @@
         </resource-bundle>
     </application>
     
-    <!-- Configuração de conversores -->
     <converter>
         <converter-id>estadoConverter</converter-id>
         <converter-class>com.teste.sinerji.presentation.converter.EstadoConverter</converter-class>

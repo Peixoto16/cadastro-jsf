@@ -59,7 +59,6 @@ public class PessoaController implements Serializable {
     @Getter @Setter
     private List<PessoaDTO> pessoasFiltradas;
     
-    // Filtros
     @Getter @Setter
     private String filtroCpf;
     
@@ -96,7 +95,6 @@ public class PessoaController implements Serializable {
         try {
             pessoas = pessoaService.listarTodas();
             pessoasFiltradas = new ArrayList<>(pessoas);
-            // Atualiza o gráfico quando carregar pessoas
             criarGraficoPessoasPorEstado();
         } catch (Exception e) {
             adicionarMensagemErro("Erro ao carregar pessoas: " + e.getMessage());
@@ -136,10 +134,9 @@ public class PessoaController implements Serializable {
             } else {
                 pessoaService.salvar(pessoa);
                 adicionarMensagemSucesso("Pessoa cadastrada com sucesso! Agora cadastre o endereço.");
-                carregarPessoas(); // Atualiza a lista imediatamente
+                carregarPessoas();
                 modoEdicao = true;
                 modoEdicaoEndereco = true;
-                // Não limpar formulário, não sair da tela
                 return;
             }
         } catch (BusinessException e) {
@@ -255,7 +252,6 @@ public class PessoaController implements Serializable {
                 })
                 .collect(Collectors.toList());
 
-            // Atualiza o gráfico com base nos dados filtrados
             criarGraficoPessoasPorEstado();
 
             adicionarMensagemSucesso("Filtro aplicado com sucesso. " + 
@@ -364,9 +360,6 @@ public class PessoaController implements Serializable {
         return count;
     }
 
-    /**
-     * Retorna a porcentagem de homens cadastrados
-     */
     public double getPorcentagemHomens() {
         if (pessoas == null || pessoas.isEmpty()) return 0.0;
         long totalHomens = pessoas.stream()
@@ -375,9 +368,6 @@ public class PessoaController implements Serializable {
         return (totalHomens * 100.0) / pessoas.size();
     }
 
-    /**
-     * Retorna a porcentagem de mulheres cadastradas
-     */
     public double getPorcentagemMulheres() {
         if (pessoas == null || pessoas.isEmpty()) return 0.0;
         long totalMulheres = pessoas.stream()
@@ -386,9 +376,6 @@ public class PessoaController implements Serializable {
         return (totalMulheres * 100.0) / pessoas.size();
     }
 
-    /**
-     * Cria o gráfico de barras mostrando a quantidade de pessoas por estado.
-     */
     public void criarGraficoPessoasPorEstado() {
         pessoasPorEstadoModel = new BarChartModel();
         ChartSeries serie = new ChartSeries();
@@ -396,12 +383,9 @@ public class PessoaController implements Serializable {
 
         Map<String, Integer> contagemPorEstado = new HashMap<>();
 
-        // Inicializa o mapa com todos os estados (mesmo os que não têm pessoas)
         for (Estado estado : Estado.values()) {
             contagemPorEstado.put(estado.getNome(), 0);
         }
-
-        // Conta pessoas por estado na lista filtrada
         if (pessoasFiltradas != null) {
             for (PessoaDTO pessoa : pessoasFiltradas) {
                 if (pessoa.getEnderecos() != null && !pessoa.getEnderecos().isEmpty()) {
@@ -414,25 +398,18 @@ public class PessoaController implements Serializable {
             }
         }
 
-        // Adiciona dados ao gráfico (apenas estados com pessoas)
         for (Map.Entry<String, Integer> entry : contagemPorEstado.entrySet()) {
-            // Só adiciona estados que têm pelo menos uma pessoa
             if (entry.getValue() > 0) {
                 serie.set(entry.getKey(), entry.getValue());
             }
         }
 
-        // Configura o dataset
         pessoasPorEstadoModel.addSeries(serie);
         pessoasPorEstadoModel.setTitle("Pessoas por Estado");
         pessoasPorEstadoModel.setLegendPosition("ne");
         pessoasPorEstadoModel.setShowPointLabels(true);
     }
 
-
-    /**
-     * Busca endereço pelo CEP e preenche os campos do formulário.
-     */
     public void buscarEnderecoPorCep() {
         try {
             if (endereco == null || endereco.getCep() == null || endereco.getCep().trim().isEmpty()) {
@@ -441,16 +418,13 @@ public class PessoaController implements Serializable {
             
             ViaCepDTO viaCepDTO = cepService.consultarCep(endereco.getCep());
             
-            // Preenche os campos do endereço com os dados retornados pela API
             endereco.setLogradouro(viaCepDTO.getLogradouro());
             endereco.setCidade(viaCepDTO.getCidade());
             
-            // Converte a UF para o enum Estado
             try {
                 Estado estado = Estado.valueOf(viaCepDTO.getEstado());
                 endereco.setEstado(estado);
             } catch (IllegalArgumentException e) {
-                // Se não conseguir converter, deixa o estado em branco
                 adicionarMensagemErro("Estado não reconhecido: " + viaCepDTO.getEstado());
             }
             

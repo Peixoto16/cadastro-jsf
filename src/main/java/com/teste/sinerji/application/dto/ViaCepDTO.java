@@ -36,6 +36,5 @@ public class ViaCepDTO implements Serializable {
     private String ddd;
     private String siafi;
     
-    // Indica se o CEP foi encontrado ou se houve erro
     private boolean erro;
 }

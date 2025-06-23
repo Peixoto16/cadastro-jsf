@@ -46,7 +46,6 @@ class PessoaServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Configuração de objetos para teste
         pessoaDTO = new PessoaDTO();
         pessoaDTO.setId(1L);
         pessoaDTO.setNome("João Silva");
@@ -65,17 +64,14 @@ class PessoaServiceTest {
     @Test
     @DisplayName("Deve listar todas as pessoas")
     void deveListarTodasAsPessoas() {
-        // Arrange
         List<Pessoa> pessoas = Arrays.asList(pessoa);
         List<PessoaDTO> pessoasDTO = Arrays.asList(pessoaDTO);
         
         when(pessoaRepository.listarTodas()).thenReturn(pessoas);
         when(pessoaMapper.toDTOList(pessoas)).thenReturn(pessoasDTO);
 
-        // Act
         List<PessoaDTO> resultado = pessoaService.listarTodas();
 
-        // Assert
         assertEquals(1, resultado.size());
         assertEquals(pessoaDTO, resultado.get(0));
         verify(pessoaRepository).listarTodas();
@@ -85,14 +81,10 @@ class PessoaServiceTest {
     @Test
     @DisplayName("Deve buscar pessoa por ID")
     void deveBuscarPessoaPorId() throws EntityNotFoundException {
-        // Arrange
         when(pessoaRepository.buscarPorId(1L)).thenReturn(Optional.of(pessoa));
         when(pessoaMapper.toDTO(pessoa)).thenReturn(pessoaDTO);
 
-        // Act
         PessoaDTO resultado = pessoaService.buscarPorId(1L);
-
-        // Assert
         assertEquals(pessoaDTO, resultado);
         verify(pessoaRepository).buscarPorId(1L);
         verify(pessoaMapper).toDTO(pessoa);
@@ -101,10 +93,8 @@ class PessoaServiceTest {
     @Test
     @DisplayName("Deve lançar exceção quando pessoa não encontrada por ID")
     void deveLancarExcecaoQuandoPessoaNaoEncontradaPorId() {
-        // Arrange
         when(pessoaRepository.buscarPorId(999L)).thenReturn(Optional.empty());
 
-        // Act & Assert
         assertThrows(EntityNotFoundException.class, () -> pessoaService.buscarPorId(999L));
         verify(pessoaRepository).buscarPorId(999L);
     }
@@ -112,7 +102,6 @@ class PessoaServiceTest {
     @Test
     @DisplayName("Deve salvar pessoa válida")
     void deveSalvarPessoaValida() throws BusinessException {
-        // Arrange
         PessoaDTO novaPessoaDTO = new PessoaDTO();
         novaPessoaDTO.setNome("Maria Santos");
         novaPessoaDTO.setCpf("52998224725"); // CPF válido
@@ -143,10 +132,8 @@ class PessoaServiceTest {
         when(pessoaRepository.salvar(novaPessoa)).thenReturn(pessoaSalva);
         when(pessoaMapper.toDTO(pessoaSalva)).thenReturn(pessoaSalvaDTO);
 
-        // Act
         PessoaDTO resultado = pessoaService.salvar(novaPessoaDTO);
 
-        // Assert
         assertEquals(2L, resultado.getId());
         assertEquals("Maria Santos", resultado.getNome());
         verify(pessoaRepository).salvar(novaPessoa);
@@ -155,13 +142,10 @@ class PessoaServiceTest {
     @Test
     @DisplayName("Deve lançar exceção ao salvar pessoa com nome vazio")
     void deveLancarExcecaoAoSalvarPessoaComNomeVazio() {
-        // Arrange
         PessoaDTO pessoaInvalida = new PessoaDTO();
         pessoaInvalida.setCpf("171.827.200-17");
         pessoaInvalida.setDataNascimento(criarData(1995, 5, 15));
         pessoaInvalida.setSexo(Sexo.F);
-
-        // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class, 
             () -> pessoaService.salvar(pessoaInvalida));
         assertEquals("Nome é obrigatório", exception.getMessage());
@@ -170,14 +154,12 @@ class PessoaServiceTest {
     @Test
     @DisplayName("Deve lançar exceção ao salvar pessoa com CPF inválido")
     void deveLancarExcecaoAoSalvarPessoaComCpfInvalido() {
-        // Arrange
         PessoaDTO pessoaInvalida = new PessoaDTO();
         pessoaInvalida.setNome("João Silva");
         pessoaInvalida.setCpf("111.111.111-11"); // CPF inválido
         pessoaInvalida.setDataNascimento(criarData(1990, 1, 1));
         pessoaInvalida.setSexo(Sexo.M);
 
-        // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class, 
             () -> pessoaService.salvar(pessoaInvalida));
         assertEquals("CPF inválido", exception.getMessage());
@@ -186,13 +168,10 @@ class PessoaServiceTest {
     @Test
     @DisplayName("Deve lançar exceção ao salvar pessoa com data de nascimento nula")
     void deveLancarExcecaoAoSalvarPessoaComDataNascimentoNula() {
-        // Arrange
         PessoaDTO pessoaInvalida = new PessoaDTO();
         pessoaInvalida.setNome("João Silva");
         pessoaInvalida.setCpf("529.982.247-25");
         pessoaInvalida.setSexo(Sexo.M);
-
-        // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class, 
             () -> pessoaService.salvar(pessoaInvalida));
         assertEquals("Data de nascimento é obrigatória", exception.getMessage());
@@ -201,13 +180,10 @@ class PessoaServiceTest {
     @Test
     @DisplayName("Deve lançar exceção ao salvar pessoa com sexo nulo")
     void deveLancarExcecaoAoSalvarPessoaComSexoNulo() {
-        // Arrange
         PessoaDTO pessoaInvalida = new PessoaDTO();
         pessoaInvalida.setNome("João Silva");
         pessoaInvalida.setCpf("529.982.247-25");
         pessoaInvalida.setDataNascimento(criarData(1990, 1, 1));
-
-        // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class, 
             () -> pessoaService.salvar(pessoaInvalida));
         assertEquals("Sexo é obrigatório", exception.getMessage());
@@ -216,16 +192,11 @@ class PessoaServiceTest {
     @Test
     @DisplayName("Deve atualizar pessoa existente")
     void deveAtualizarPessoaExistente() throws EntityNotFoundException, BusinessException {
-        // Arrange
         when(pessoaRepository.buscarPorId(1L)).thenReturn(Optional.of(pessoa));
         when(pessoaMapper.toEntity(pessoaDTO)).thenReturn(pessoa);
         when(pessoaRepository.salvar(pessoa)).thenReturn(pessoa);
         when(pessoaMapper.toDTO(pessoa)).thenReturn(pessoaDTO);
-
-        // Act
         PessoaDTO resultado = pessoaService.atualizar(pessoaDTO);
-
-        // Assert
         assertEquals(pessoaDTO, resultado);
         verify(pessoaRepository).buscarPorId(1L);
         verify(pessoaRepository).salvar(pessoa);
@@ -234,13 +205,8 @@ class PessoaServiceTest {
     @Test
     @DisplayName("Deve remover pessoa existente")
     void deveRemoverPessoaExistente() throws EntityNotFoundException {
-        // Arrange
         when(pessoaRepository.buscarPorId(1L)).thenReturn(Optional.of(pessoa));
-
-        // Act
         pessoaService.remover(1L);
-
-        // Assert
         verify(pessoaRepository).buscarPorId(1L);
         verify(pessoaRepository).remover(1L);
     }
@@ -248,11 +214,8 @@ class PessoaServiceTest {
     @Test
     @DisplayName("Deve validar CPF correto")
     void deveValidarCpfCorreto() throws Exception {
-        // Arrange - usando reflexão para acessar método privado
         java.lang.reflect.Method method = PessoaService.class.getDeclaredMethod("isCpfValido", String.class);
         method.setAccessible(true);
-
-        // Act & Assert - testando CPFs válidos conhecidos
         assertTrue((Boolean) method.invoke(pessoaService, "11144477735"));
         assertTrue((Boolean) method.invoke(pessoaService, "52998224725"));
         assertTrue((Boolean) method.invoke(pessoaService, "52998224725"));
@@ -265,7 +228,6 @@ class PessoaServiceTest {
         java.lang.reflect.Method method = PessoaService.class.getDeclaredMethod("isCpfValido", String.class);
         method.setAccessible(true);
 
-        // Act & Assert - testando vários CPFs inválidos
         assertFalse((Boolean) method.invoke(pessoaService, "111.111.111-11"));
         assertFalse((Boolean) method.invoke(pessoaService, "123.456.789-10"));
         assertFalse((Boolean) method.invoke(pessoaService, ""));

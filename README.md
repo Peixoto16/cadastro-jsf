@@ -1,5 +1,7 @@
 # Cadastro de Pessoas - Desafio Sinerji
 
+## Suporte 24 Horas !!
+
 ## Sumário
 
 - [Descrição](#descrição)
@@ -10,17 +12,18 @@
 - [Boas Práticas Implementadas](#boas-práticas-implementadas)
 
 Este projeto é uma aplicação web para cadastro e gerenciamento de pessoas, desenvolvida com a plataforma Jakarta. O sistema inclui funcionalidades de CRUD, controle de acesso baseado em papéis (`ADMIN` e `USER`) e exportação de dados, integração com api de cep para busca de endereço e testes unitários e de integração.
-
+USER - NÃO POSSUI ACESSO AO CADASTRO DE PESSOAS.
+ADMIN - ACESSO TOTAL DO SISTEMA.
 ---
 
 ## 1. Decisões Técnicas e Arquiteturais
 
-A arquitetura foi pensada para ser simples, robusta e fácil de manter, seguindo boas práticas do ecossistema Jakarta.
+A arquitetura do sistema foi projetada para ser **simples, robusta e escalável**, seguindo os padrões consolidados do ecossistema Jakarta.
 
-- **Camadas bem definidas:** Separação clara entre apresentação, controle, persistência e segurança.
-- **MVC com JSF:** Interface, lógica e dados separados de forma organizada.
-- **CDI:** Injeção de dependências para facilitar o gerenciamento dos componentes e do ciclo de vida dos beans.
-- **JPA com Hibernate:** Persistência de dados feita de forma simples e orientada a objetos, sem SQL direto no código.
+- **Arquitetura em Camadas:** A aplicação é dividida em camadas claras (Apresentação, Controle, Persistência e Segurança) para garantir a separação de responsabilidades e facilitar a manutenção.
+- **Padrão MVC (Model-View-Controller):** Utilizamos o JSF, que implementa o padrão MVC, para separar a lógica de negócio (Controller), os dados (Model) e a interface do usuário (View).
+- **Injeção de Dependências (CDI):** O `Contexts and Dependency Injection` (CDI) é usado para gerenciar o ciclo de vida dos beans e desacoplar os componentes. Beans `@RequestScoped` são usados para ações pontuais, enquanto o `@SessionScoped` é usado para manter o estado do usuário logado.
+- **Persistência com JPA:** O `Jakarta Persistence API` (JPA) com Hibernate abstrai o acesso ao banco de dados, permitindo um desenvolvimento mais rápido e um código mais limpo, focado em objetos Java em vez de SQL.
 
 ### Justificativa de Frameworks e Bibliotecas
 
@@ -53,8 +56,16 @@ Essas escolhas garantem um ambiente moderno, produtivo, com foco em qualidade, f
     cd cadastro-jsf
     ```
 
-2.  **Configure o Banco de Dados:**
-    - Crie um banco de dados no PostgreSQL.
+2.  **Suba o Banco de Dados com Docker:**
+    - Se preferir praticidade, utilize o Docker para rodar o PostgreSQL. Na raiz do projeto, execute:
+    ```bash
+    docker-compose up -d
+    ```
+    - Isso irá criar um container PostgreSQL já configurado conforme o arquivo `docker-compose.yml`.
+    - O banco estará acessível em `localhost:5432` (usuário: `postgres`, senha: `170195`, banco: `cadastro`).
+
+3.  **Configure o Banco de Dados:**
+    - Se preferir criar manualmente, crie um banco de dados no PostgreSQL.
     - Abra o arquivo `src/main/resources/META-INF/persistence.xml` e ajuste as propriedades de conexão com o banco (URL, usuário e senha).
 
 3.  **Compile o projeto com Maven:**
@@ -65,7 +76,7 @@ Essas escolhas garantem um ambiente moderno, produtivo, com foco em qualidade, f
     - Isso irá gerar o arquivo `cadastro-pessoa.war` (ou `ROOT.war`, dependendo da configuração no `pom.xml`) na pasta `target/`.
 
 4.  **Faça o Deploy no Servidor:**
-     - Inicie seu servidor de aplicação (WildFly) normalmente.
+     - Inicie seu servidor de aplicação (Usei o WildFly 36) normalmente.
 
 5.  **Acesse a Aplicação:**
     - Abra o navegador e acesse a URL da aplicação. Por padrão:
@@ -159,5 +170,3 @@ Os testes cobrem os principais componentes da aplicação:
     - Testes de integração com banco H2 em memória simulando cenários reais.
     - Cobertura de casos de sucesso, exceções e validações.
     - Isolamento de dependências com mocks e injeção manual em filtros.
-
-

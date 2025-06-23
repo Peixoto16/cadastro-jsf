@@ -69,7 +69,6 @@ public class EnderecoService implements Serializable {
      * @throws EntityNotFoundException Se a pessoa não for encontrada
      */
     public List<EnderecoDTO> listarPorPessoa(Long pessoaId) throws EntityNotFoundException {
-        // Verifica se a pessoa existe
         if (!pessoaRepository.buscarPorId(pessoaId).isPresent()) {
             throw new EntityNotFoundException("Pessoa não encontrada com o ID: " + pessoaId);
         }
@@ -107,7 +106,6 @@ public class EnderecoService implements Serializable {
         
         validarEndereco(dto);
         
-        // Verifica se a pessoa existe
         if (dto.getPessoaId() == null) {
             throw new BusinessException("ID da pessoa é obrigatório");
         }
@@ -139,12 +137,10 @@ public class EnderecoService implements Serializable {
             throw new BusinessException("ID é obrigatório para atualização");
         }
         
-        // Verifica se o endereço existe
         buscarPorId(dto.getId());
         
         validarEndereco(dto);
         
-        // Verifica se a pessoa existe
         if (dto.getPessoaId() == null) {
             throw new BusinessException("ID da pessoa é obrigatório");
         }
@@ -218,7 +214,6 @@ public class EnderecoService implements Serializable {
             throw new BusinessException("CEP é obrigatório");
         }
         
-        // Validação do formato do CEP (00000-000 ou 00000000)
         String cep = dto.getCep().replaceAll("[^0-9]", "");
         if (cep.length() != 8) {
             throw new BusinessException("CEP deve conter 8 dígitos");

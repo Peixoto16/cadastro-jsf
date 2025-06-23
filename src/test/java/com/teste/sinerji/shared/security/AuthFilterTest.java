@@ -50,28 +50,23 @@ class AuthFilterTest {
     void setUp() throws Exception {
         authFilter = new AuthFilter();
         
-        // Injetar manualmente o LoginBean mockado no AuthFilter
         Field loginBeanField = AuthFilter.class.getDeclaredField("loginBean");
         loginBeanField.setAccessible(true);
         loginBeanField.set(authFilter, loginBean);
         
-        // Configurações básicas para todos os testes
+        
         lenient().when(request.getSession(false)).thenReturn(session);
-        // Restauramos a configuração padrão do contextPath para evitar NullPointerException
         lenient().when(request.getContextPath()).thenReturn("");
     }
 
     @Test
     @DisplayName("Deve permitir acesso a recursos estáticos")
     void devePermitirAcessoARecursosEstaticos() throws IOException, ServletException {
-        // Arrange
         when(request.getRequestURI()).thenReturn("/jakarta.faces.resource/css/style.css");
         when(request.getContextPath()).thenReturn("");
 
-        // Act
         authFilter.doFilter(request, response, chain);
 
-        // Assert
         verify(chain).doFilter(request, response);
         verify(response, never()).sendRedirect(anyString());
     }
@@ -79,15 +74,11 @@ class AuthFilterTest {
     @Test
     @DisplayName("Deve permitir acesso à página de login")
     void devePermitirAcessoAPaginaDeLogin() throws IOException, ServletException {
-        // Arrange
         when(request.getRequestURI()).thenReturn("/login.xhtml");
         when(request.getContextPath()).thenReturn("");
-        // Não precisamos configurar loginBean.isLoggedIn() aqui pois o filtro permite acesso à página de login independentemente
 
-        // Act
         authFilter.doFilter(request, response, chain);
 
-        // Assert
         verify(chain).doFilter(request, response);
         verify(response, never()).sendRedirect(anyString());
     }
@@ -95,15 +86,11 @@ class AuthFilterTest {
     @Test
     @DisplayName("Deve redirecionar para login quando usuário não autenticado tenta acessar página protegida")
     void deveRedirecionarParaLoginQuandoUsuarioNaoAutenticadoTentaAcessarPaginaProtegida() throws IOException, ServletException {
-        // Arrange
         when(request.getRequestURI()).thenReturn("/pages/pessoa/lista.xhtml");
         when(request.getContextPath()).thenReturn("/app");
         when(loginBean.isLoggedIn()).thenReturn(false);
-
-        // Act
         authFilter.doFilter(request, response, chain);
 
-        // Assert
         verify(response).sendRedirect("/app/login.xhtml");
         verify(chain, never()).doFilter(request, response);
     }
@@ -111,15 +98,12 @@ class AuthFilterTest {
     @Test
     @DisplayName("Deve permitir acesso quando usuário autenticado acessa página protegida")
     void devePermitirAcessoQuandoUsuarioAutenticadoAcessaPaginaProtegida() throws IOException, ServletException {
-        // Arrange
+       
         when(request.getRequestURI()).thenReturn("/pages/pessoa/lista.xhtml");
         when(request.getContextPath()).thenReturn("");
         when(loginBean.isLoggedIn()).thenReturn(true);
-
-        // Act
         authFilter.doFilter(request, response, chain);
 
-        // Assert
         verify(chain).doFilter(request, response);
         verify(response, never()).sendRedirect(anyString());
     }
@@ -127,16 +111,12 @@ class AuthFilterTest {
     @Test
     @DisplayName("Deve redirecionar para login quando sessão é nula")
     void deveRedirecionarParaLoginQuandoSessaoENula() throws IOException, ServletException {
-        // Arrange
+        
         when(request.getRequestURI()).thenReturn("/pages/pessoa/lista.xhtml");
-        // Não precisamos configurar o contextPath aqui, pois já está configurado no setUp()
-        // Não precisamos configurar getSession(false), pois o filtro não usa isso
-
-        // Act
+        
         authFilter.doFilter(request, response, chain);
 
-        // Assert
-        verify(response).sendRedirect("/login.xhtml"); // Usando o contextPath vazio do setUp()
+        verify(response).sendRedirect("/login.xhtml"); 
         verify(chain, never()).doFilter(request, response);
     }
 }
